@@ -416,9 +416,6 @@ void MainWindow::connect_to_df() {
         m_df->find_running_copy();
 
         //once connected, update any memory layouts as required
-        const auto t_val = m_df->status();
-        const auto t_check = m_df->status() == DFInstance::DFS_CONNECTED;
-
         if(m_df->status() == DFInstance::DFS_CONNECTED || (
                                                       m_updater->last_updated_checksum() != m_df->df_checksum() &&
                                                       m_settings->value("options/check_for_updates_on_startup", true).toBool())){
