@@ -71,7 +71,8 @@ void ActivityEvent::read_data(){
             VIRTADDR participant_addr = m_address + participant_offset;
             QVector<VIRTADDR> participants = m_df->enumerate_vector(participant_addr);
 
-            QVector<VIRTADDR> other_participants = m_df->enumerate_vector(participant_addr + participant_offset - 0x14); //TODO: offset
+            // Some magic (x32 = 0x14, x64 = 0x28 i guess?)
+            QVector<VIRTADDR> other_participants = m_df->enumerate_vector(participant_addr + participant_offset - OTHER_PARTICIPANTS); //TODO: offset
             foreach(auto h_id,other_participants){
                 if(!participants.contains(h_id)){
                     participants << h_id;
