@@ -31,16 +31,9 @@ THE SOFTWARE.
 #include <QString>
 #include <math.h>
 
-#ifdef Q_PROCESSOR_X86_32
-// valid for as long as DF stays 32bit
-typedef quint32 VIRTADDR;
-typedef quint32 USIZE;
-typedef qint32 SSIZE;
-#elif defined(Q_PROCESSOR_X86_64)
-typedef quint64 VIRTADDR;
-typedef quint64 USIZE;
-typedef qint64 SSIZE;
-#endif
+typedef quintptr VIRTADDR;
+typedef quintptr USIZE;
+typedef qintptr SSIZE;
 typedef quint8 BYTE;
 typedef quint16 WORD;
 

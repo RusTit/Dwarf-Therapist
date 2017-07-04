@@ -166,16 +166,13 @@ void Race::load_caste_ratios(){
 
             float commonality = 0.0;
             for(int idx=0; idx < m_castes.count();idx++){
-
-                // todo This is temporary, it fix runtime crash
                 if (idx >= ratios.count()) {
-                    LOGD << "ratios count is less than castes count " << ratios.count() << "<" << m_castes.count();
-                    break;
-                }
-
-                commonality = (float)ratios.at(idx) / (float)sum;
-                if(commonality > 0.0001){
                     valid_castes++;
+                } else {
+                    commonality = (float)ratios.at(idx) / (float)sum;
+                    if (commonality > 0.0001) {
+                        valid_castes++;
+                    }
                 }
             }
             //castes usually come in male/female pairs, vanilla only has 2 castes (dwarf male/female)
