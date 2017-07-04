@@ -100,9 +100,9 @@ public:
     QString checksum() {return m_checksum;}
     QString git_sha() {return m_git_sha;}
     bool is_valid_address(VIRTADDR addr);
-    uint string_buffer_offset();
-    uint string_length_offset();
-    uint string_cap_offset();
+    VIRTADDR string_buffer_offset();
+    VIRTADDR string_length_offset();
+    VIRTADDR string_cap_offset();
 
     QHash<QString,VIRTADDR> get_section_offsets(const MEM_SECTION &section) {
         return m_offsets.value(section);
@@ -110,7 +110,7 @@ public:
     VIRTADDR offset(const MEM_SECTION &section, const QString &name) const{
         return m_offsets.value(section).value(name,-1);
     }
-    QHash<uint,QString> get_flags(const UNIT_FLAG_TYPE &flag_type){
+    QHash<VIRTADDR,QString> get_flags(const UNIT_FLAG_TYPE &flag_type){
         return m_flags.value(flag_type);
     }
 
@@ -144,12 +144,12 @@ public:
     qint16 job_detail(const QString &key) const {return offset(MEM_JOB,key);}
     qint16 soul_detail(const QString &key) const {return offset(MEM_SOUL,key);}
 
-    QHash<uint, QString> invalid_flags_1() {return get_flags(INVALID_FLAGS_1) ;}
-    QHash<uint, QString> invalid_flags_2() {return get_flags(INVALID_FLAGS_2);}
-    QHash<uint, QString> invalid_flags_3() {return get_flags(INVALID_FLAGS_3);}
+    QHash<VIRTADDR, QString> invalid_flags_1() {return get_flags(INVALID_FLAGS_1) ;}
+    QHash<VIRTADDR, QString> invalid_flags_2() {return get_flags(INVALID_FLAGS_2);}
+    QHash<VIRTADDR, QString> invalid_flags_3() {return get_flags(INVALID_FLAGS_3);}
 
     //Setters
-    void set_address(const QString & key, uint value);
+    void set_address(const QString & key, VIRTADDR value);
     void set_game_version(const QString & value);
     void set_checksum(const QString & checksum);
     void save_data();
@@ -166,7 +166,7 @@ private:
     typedef QHash<QString, VIRTADDR> AddressHash;
 
     QHash<MEM_SECTION,AddressHash> m_offsets;
-    QHash<UNIT_FLAG_TYPE, QHash<uint,QString> > m_flags;
+    QHash<UNIT_FLAG_TYPE, QHash<VIRTADDR,QString> > m_flags;
 
     QFileInfo m_fileinfo;
     QString m_checksum;
@@ -175,7 +175,7 @@ private:
     QSettings m_data;
     bool m_complete;
 
-    uint read_hex(QString key);
+    VIRTADDR read_hex(QString key);
     void read_group(const MEM_SECTION &section);
     void read_flags(const UNIT_FLAG_TYPE &flag_type);
 };

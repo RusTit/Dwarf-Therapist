@@ -56,7 +56,7 @@ QString DFInstanceWindows::get_last_error() {
                   FORMAT_MESSAGE_FROM_SYSTEM |
                   FORMAT_MESSAGE_IGNORE_INSERTS,
                   NULL, err, 0, (LPWSTR)&bufPtr, 0, NULL);
-    const QString result = bufPtr ? QString::fromWCharArray(bufPtr).trimmed()
+    const QString result = bufPtr ? QString::fromWCharArray(bufPtr).trimmed().append(", error code: %1, 0x%2").arg(err).arg(err, 0, 16)
                                   : QString("Unknown Error %1").arg(err);
     LocalFree(bufPtr);
     return result;
@@ -121,8 +121,13 @@ USIZE DFInstanceWindows::read_raw(const VIRTADDR &addr, const USIZE &bytes,
                                 void *buffer) {
     ZeroMemory(buffer, bytes);
     USIZE bytes_read = 0;
-    ReadProcessMemory(m_proc, reinterpret_cast<LPCVOID>(addr), buffer,
-                      bytes, reinterpret_cast<SIZE_T*>(&bytes_read));
+
+    SetLastError(0);
+    ReadProcessMemory(m_proc, reinterpret_cast<LPCVOID>(addr), buffer, bytes, reinterpret_cast<SIZE_T*>(&bytes_read));
+    if (bytes_read == 0) {
+        LOGE << "Raw read: " << get_last_error();
+    }
+
     return bytes_read;
 }
 
@@ -175,9 +180,9 @@ void DFInstanceWindows::find_running_copy() {
     LOGI << "PID of process is: " << m_pid;
 
     m_proc = OpenProcess(PROCESS_QUERY_INFORMATION
-                         | PROCESS_VM_OPERATION
-                         | PROCESS_VM_READ
-                         | PROCESS_VM_WRITE, false, m_pid);
+                             | PROCESS_VM_OPERATION
+                             | PROCESS_VM_READ
+                             | PROCESS_VM_WRITE, false, m_pid);
     LOGI << "PROC HANDLE:" << m_proc;
     if (!m_proc) {
         LOGE << "Error opening process!" << get_last_error();
@@ -211,8 +216,7 @@ void DFInstanceWindows::find_running_copy() {
             }
 
             LOGI << "RAW BASE ADDRESS:" << base_addr;
-            m_base_addr = base_addr - 0x00400000;
-
+            m_base_addr = base_addr - DEFAULT_BASE_ADDRESS_OFFSET;
             m_status = DFS_CONNECTED;
             set_memory_layout(calculate_checksum(pe_header));
 

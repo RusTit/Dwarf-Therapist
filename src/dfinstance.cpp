@@ -217,7 +217,7 @@ template<typename T>
 QVector<T> DFInstance::enum_vec(const VIRTADDR &addr){
     QVector<T> out;
     VIRTADDR start = read_addr(addr);
-    VIRTADDR end = read_addr(addr + 4);
+    VIRTADDR end = read_addr(addr + sizeof(T));
     USIZE bytes = end - start;
     if (check_vector(start,end,addr)){
         out.resize(bytes / sizeof(T));

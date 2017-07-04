@@ -28,6 +28,13 @@ THE SOFTWARE.
 #include "dfinstance.h"
 #include <memory>
 
+const size_t DEFAULT_BASE_ADDRESS_OFFSET =
+#ifdef Q_PROCESSOR_X86_32
+            0x00400000;
+#elif defined(Q_PROCESSOR_X86_64)
+            0x140000000;
+#endif
+
 class Dwarf;
 class MemoryLayout;
 

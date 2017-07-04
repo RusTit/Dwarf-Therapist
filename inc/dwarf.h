@@ -291,7 +291,7 @@ public:
     //! return this creature's Nth bit from the start of flags1
     Q_INVOKABLE bool get_flag_value(int bit_pos);
 
-    bool has_invalid_flags(QHash<uint, QString> invalid_flags, quint32 dwarf_flags);
+    bool has_invalid_flags(QHash<VIRTADDR, QString> invalid_flags, quint32 dwarf_flags);
 
     //! return this dwarf's highest skill
     Skill highest_skill();

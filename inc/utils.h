@@ -36,15 +36,13 @@ THE SOFTWARE.
 typedef quint32 VIRTADDR;
 typedef quint32 USIZE;
 typedef qint32 SSIZE;
-typedef quint8 BYTE;
-typedef quint16 WORD;
 #elif defined(Q_PROCESSOR_X86_64)
 typedef quint64 VIRTADDR;
 typedef quint64 USIZE;
 typedef qint64 SSIZE;
+#endif
 typedef quint8 BYTE;
 typedef quint16 WORD;
-#endif
 
 static inline QColor complement(const QColor &in_color, float brightness_threshold = 0.50) {
     qreal brightness = sqrt(pow(in_color.redF(),2.0) * 0.241 +

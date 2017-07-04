@@ -193,7 +193,7 @@ Dwarf::~Dwarf() {
     disconnect(DT, SIGNAL(settings_changed()), this, SLOT(read_settings()));
 }
 
-bool Dwarf::has_invalid_flags(QHash<uint, QString> invalid_flags, quint32 dwarf_flags){
+bool Dwarf::has_invalid_flags(QHash<VIRTADDR, QString> invalid_flags, quint32 dwarf_flags){
     foreach(uint invalid_flag, invalid_flags.uniqueKeys()) {
         QString reason = invalid_flags[invalid_flag];
         if(dwarf_flags & invalid_flag) {

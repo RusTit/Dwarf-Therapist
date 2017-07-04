@@ -80,11 +80,10 @@ void MemoryLayout::load_data() {
     }
 }
 
-uint MemoryLayout::read_hex(QString key) {
+VIRTADDR MemoryLayout::read_hex(QString key) {
     bool ok;
-    QString data = m_data.value(key, -1).toString();
-    uint val = data.toUInt(&ok, 16);
-    return val;
+    QString data = m_data.value(key, -1).toString();    
+    return static_cast<VIRTADDR>(data.toULongLong(&ok, 16));
 }
 
 bool MemoryLayout::is_valid() {
@@ -108,7 +107,7 @@ void MemoryLayout::read_group(const MEM_SECTION &section) {
 
 void MemoryLayout::read_flags(const UNIT_FLAG_TYPE &flag_type){
     QString ini_name = flag_type_name(flag_type);
-    QHash<uint,QString> map = m_flags[flag_type];
+    QHash<VIRTADDR,QString> map = m_flags[flag_type];
     int flag_count = m_data.beginReadArray(ini_name);
     for (int idx = 0; idx < flag_count; ++idx) {
         m_data.setArrayIndex(idx);
@@ -119,21 +118,21 @@ void MemoryLayout::read_flags(const UNIT_FLAG_TYPE &flag_type){
     m_flags.insert(flag_type,map);
 }
 
-uint MemoryLayout::string_buffer_offset() {
+VIRTADDR MemoryLayout::string_buffer_offset() {
     return m_offsets.value(MEM_LANGUAGE).value("string_buffer_offset", DFInstance::STRING_BUFFER_OFFSET);
 }
 
-uint MemoryLayout::string_length_offset() {
+VIRTADDR MemoryLayout::string_length_offset() {
     return string_buffer_offset() +
             m_offsets.value(MEM_LANGUAGE).value("string_length_offset", DFInstance::STRING_LENGTH_OFFSET);
 }
 
-uint MemoryLayout::string_cap_offset() {
+VIRTADDR MemoryLayout::string_cap_offset() {
     return string_buffer_offset() +
             m_offsets.value(MEM_LANGUAGE).value("string_cap_offset", DFInstance::STRING_CAP_OFFSET);
 }
 
-void MemoryLayout::set_address(const QString & key, uint value) {
+void MemoryLayout::set_address(const QString & key, VIRTADDR value) {
     m_data.setValue(key, hexify(value));
 }
 
