@@ -76,6 +76,13 @@ void HistFigure::read_kills(){
             if(undead_kills.at(idx) != 0){
                 id = -id;
             }
+
+            // todo This is temporary, it fix runtime crash
+            if (idx >= cur_site_kills.count()) {
+                LOGD << "cur_site_kills count is less than race_ids count " << cur_site_kills.count() << "<" << race_ids.size();
+                break;
+            }
+
             int count = cur_site_kills.at(idx);
             int curr_count = kills.value(id,0);
             kills.insert(id,count+curr_count);

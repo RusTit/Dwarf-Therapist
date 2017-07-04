@@ -119,9 +119,9 @@ void Race::read_race() {
     m_materials_addr = m_df->enumerate_vector(m_address + m_mem->race_offset("materials_vector"));
     m_tissues_addr = m_df->enumerate_vector(m_address + m_mem->race_offset("tissues_vector"));
 
-    //m_description = m_df->read_string(m_address + m_mem->caste_offset("caste_descr"));
+    m_description = m_df->read_string(m_address + m_mem->caste_offset("caste_descr"));
     QVector<VIRTADDR> castes = m_df->enumerate_vector(m_castes_vector);
-    //LOGD << "RACE " << m_name << " (index:" << m_id << ") with " << castes.size() << "castes";
+    LOGD << "RACE " << m_name << " (index:" << m_id << ") with " << castes.size() << "castes";
 
     if (!castes.empty()) {
         foreach (VIRTADDR caste_addr, castes) {
@@ -166,6 +166,13 @@ void Race::load_caste_ratios(){
 
             float commonality = 0.0;
             for(int idx=0; idx < m_castes.count();idx++){
+
+                // todo This is temporary, it fix runtime crash
+                if (idx >= ratios.count()) {
+                    LOGD << "ratios count is less than castes count " << ratios.count() << "<" << m_castes.count();
+                    break;
+                }
+
                 commonality = (float)ratios.at(idx) / (float)sum;
                 if(commonality > 0.0001){
                     valid_castes++;

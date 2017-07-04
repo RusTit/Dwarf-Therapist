@@ -174,6 +174,13 @@ void UnitWound::read_wound(){
                 //this only applies to mods, and usually fortress animals/creatures at that (masterwork golems). this also still doesn't process all related layers, as they're not mapped.
                 //it's only doing a check on the layers for this bodypart. any layers above/below that may have also been pierced are ignored as it's probably not THAT important
                 foreach(BodyPartLayer bpl, bp.body_part()->get_layers()){
+
+                    // todo This is temporary, it fix runtime crash
+                    auto layer_id = bpl.global_layer_id();
+                    if (layer_id >= m_unitHealth->layer_status_flags.count()) {
+                        LOGD << "layer_id " << layer_id << "<" << m_unitHealth->layer_status_flags.count();
+                        break;
+                    }
                     if(m_unitHealth->layer_status_flags.at(bpl.global_layer_id()) & 1){
                         //gone
                         wounded_part_details fluid_gone;

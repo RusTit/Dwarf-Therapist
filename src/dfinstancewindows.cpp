@@ -124,8 +124,8 @@ USIZE DFInstanceWindows::read_raw(const VIRTADDR &addr, const USIZE &bytes,
 
     SetLastError(0);
     ReadProcessMemory(m_proc, reinterpret_cast<LPCVOID>(addr), buffer, bytes, reinterpret_cast<SIZE_T*>(&bytes_read));
-    if (bytes_read == 0) {
-        LOGE << "Raw read: " << get_last_error();
+    if (bytes > 0 && bytes_read == 0) {
+        LOGE << "Raw read: " << get_last_error() << " " << bytes;
     }
 
     return bytes_read;
