@@ -68,6 +68,9 @@ QString DFInstanceWindows::calculate_checksum(const IMAGE_NT_HEADERS &pe_header)
     return hexify(compile_timestamp).toLower();
 }
 
+const size_t BUFFER_MAX_SIZE = 1024U;
+char string_buffer[BUFFER_MAX_SIZE];
+
 QString DFInstanceWindows::read_string(const VIRTADDR &addr) {
     int len = read_int(addr + memory_layout()->string_length_offset());
     int cap = read_int(addr + memory_layout()->string_cap_offset());
@@ -75,7 +78,7 @@ QString DFInstanceWindows::read_string(const VIRTADDR &addr) {
     if (cap >= 16)
         buffer_addr = read_addr(buffer_addr);
 
-    if (len > cap || len < 0 || len > 1024) {
+    if (len > cap || len < 0 || len > BUFFER_MAX_SIZE) {
 #ifdef _DEBUG
         // probably not really a string
         LOGW << "Tried to read a string at" << hex << addr
@@ -89,9 +92,8 @@ QString DFInstanceWindows::read_string(const VIRTADDR &addr) {
     Q_ASSERT_X(len < (1 << 16), "read_string",
                "String must be of sane length!");
 
-    auto buf = std::make_unique<char[]>(len);
-    read_raw(buffer_addr, len, buf.get());
-    return QTextCodec::codecForName("IBM437")->toUnicode(buf.get(), len);
+    read_raw(buffer_addr, len, string_buffer);
+    return QTextCodec::codecForName("IBM437")->toUnicode(string_buffer, len);
 }
 
 USIZE DFInstanceWindows::write_string(const VIRTADDR &addr, const QString &str) {
@@ -122,19 +124,41 @@ USIZE DFInstanceWindows::read_raw(const VIRTADDR &addr, const USIZE &bytes,
     ZeroMemory(buffer, bytes);
     USIZE bytes_read = 0;
 
+#ifdef QT_DEBUG
     SetLastError(0);
+#endif
+
     ReadProcessMemory(m_proc, reinterpret_cast<LPCVOID>(addr), buffer, bytes, reinterpret_cast<SIZE_T*>(&bytes_read));
-    if (bytes > 0 && bytes_read == 0) {
-        LOGE << "Raw read: " << get_last_error() << " " << bytes;
+
+#ifdef QT_DEBUG
+    if (GetLastError()) {
+        LOGE << QString("Read error: %1; adress: dec(%2), hex(0x%3); bytes: %4")
+                .arg(get_last_error())
+                .arg(addr)
+                .arg(addr, 8, 16)
+                .arg(bytes);
     }
+#endif
 
     return bytes_read;
 }
 
 USIZE DFInstanceWindows::write_raw(const VIRTADDR &addr, const USIZE &bytes, const void *buffer) {
     USIZE bytes_written = 0;
+#ifdef QT_DEBUG
+    SetLastError(0);
+#endif
     WriteProcessMemory(m_proc, reinterpret_cast<LPVOID>(addr), buffer,
                        bytes, reinterpret_cast<SIZE_T*>(&bytes_written));
+#ifdef QT_DEBUG
+    if (GetLastError()) {
+        LOGE << QString("Write error: %1; adress: dec(%2), hex(0x%3); bytes: %4")
+                .arg(get_last_error())
+                .arg(addr)
+                .arg(addr, 8, 16)
+                .arg(bytes);
+    }
+#endif
 
     Q_ASSERT(bytes_written == bytes);
     return bytes_written;
