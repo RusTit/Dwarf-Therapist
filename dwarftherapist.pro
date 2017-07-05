@@ -273,7 +273,8 @@ HEADERS += inc/viewmanager.h \
     inc/equipwarn.h \
     inc/notificationwidget.h \
     inc/notifierwidget.h \
-    inc/updater.h
+    inc/updater.h \
+    inc/customhtmlwordwrap.h
 SOURCES += src/viewmanager.cpp \
     src/uberdelegate.cpp \
     src/truncatingfilelogger.cpp \

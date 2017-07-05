@@ -34,6 +34,7 @@ THE SOFTWARE.
 #include "syndrome.h"
 #include "equipwarn.h"
 #include <QModelIndex>
+#include "customhtmlwordwrap.h"
 
 class QAction;
 class DFInstance;
