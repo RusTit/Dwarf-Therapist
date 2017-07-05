@@ -2569,7 +2569,7 @@ QString Dwarf::tooltip_text() {
     }
 
 
-    QStringList tt;
+    QStringList firstColumn, secondColumn;
     QString title;
     if(s->value("tooltip_show_icons",true).toBool()){
         title += tr("<center><b><h3 style=\"margin:0;\"><img src='%1'> %2 %3</h3><h4 style=\"margin:0;\">%4</h4></b></center>")
@@ -2583,44 +2583,44 @@ QString Dwarf::tooltip_text() {
     if(!m_is_animal && s->value("tooltip_show_artifact",true).toBool() && !m_artifact_name.isEmpty())
         title.append(tr("<center><i><h5 style=\"margin:0;\">Creator of '%2'</h5></i></center>").arg(m_artifact_name));
 
-    tt.append(title);
+    firstColumn.append(title);
 
 #ifdef QT_DEBUG
-    tt.append(QString("<center><h4>ID: %1 HIST_ID: %2</h4></center>").arg(m_id).arg(m_histfig_id));
+    firstColumn.append(QString("<center><h4>ID: %1 HIST_ID: %2</h4></center>").arg(m_id).arg(m_histfig_id));
 #endif
 
     if(s->value("tooltip_show_caste",true).toBool())
-        tt.append(tr("<b>Caste:</b> %1").arg(caste_name()));
+        firstColumn.append(tr("<b>Caste:</b> %1").arg(caste_name()));
 
     if(m_is_animal || s->value("tooltip_show_age",true).toBool())
-        tt.append(tr("<b>Age:</b> %1").arg(get_age_formatted()));
+        firstColumn.append(tr("<b>Age:</b> %1").arg(get_age_formatted()));
 
     if(m_is_animal || s->value("tooltip_show_size",true).toBool())
-        tt.append(tr("<b>Size:</b> %1cm<sup>3</sup>").arg(QLocale(QLocale::system()).toString(m_body_size * 10)));
+        firstColumn.append(tr("<b>Size:</b> %1cm<sup>3</sup>").arg(QLocale(QLocale::system()).toString(m_body_size * 10)));
 
     if(!m_is_animal && s->value("tooltip_show_noble",true).toBool())
-        tt.append(tr("<b>Profession:</b> %1").arg(profession()));
+        firstColumn.append(tr("<b>Profession:</b> %1").arg(profession()));
 
     if(!m_is_animal && m_pending_squad_id > -1 && s->value("tooltip_show_squad",true).toBool())
-        tt.append(tr("<b>Squad:</b> %1").arg(m_pending_squad_name));
+        firstColumn.append(tr("<b>Squad:</b> %1").arg(m_pending_squad_name));
 
     if(!m_is_animal && m_noble_position != "" && s->value("tooltip_show_noble",true).toBool())
-        tt.append(tr("<b>Noble Position%1:</b> %2").arg(m_noble_position.indexOf(",") > 0 ? "s" : "").arg(m_noble_position));
+        firstColumn.append(tr("<b>Noble Position%1:</b> %2").arg(m_noble_position.indexOf(",") > 0 ? "s" : "").arg(m_noble_position));
 
     if(!m_is_animal && s->value("tooltip_show_happiness",true).toBool()){
-        tt.append(tr("<b>Happiness:</b> %1").arg(m_happiness_desc));
+        firstColumn.append(tr("<b>Happiness:</b> %1").arg(m_happiness_desc));
         if(m_stressed_mood)
-            tt.append(tr("<b>Mood: </b>%1").arg(gdr->get_mood_desc(m_mood_id,true)));
+            firstColumn.append(tr("<b>Mood: </b>%1").arg(gdr->get_mood_desc(m_mood_id,true)));
     }
 
     if(s->value("tooltip_show_orientation",false).toBool())
-        tt.append(tr("<b>Gender/Orientation</b> %1").arg(m_gender_info.full_desc));
+        firstColumn.append(tr("<b>Gender/Orientation</b> %1").arg(m_gender_info.full_desc));
 
     if(!m_is_animal && !m_emotions_desc.isEmpty() && s->value("tooltip_show_thoughts",true).toBool())
-        tt.append(tr("<p style=\"margin:0px;\">%1</p>").arg(m_emotions_desc));
+        secondColumn.append(tr("<b>Emotions:</b> %1").arg(m_emotions_desc));
 
     if(!skill_summary.isEmpty())
-        tt.append(tr("<h4 style=\"margin:0px;\"><b>Skills:</b></h4><ul style=\"margin:0px;\">%1</ul>").arg(skill_summary));
+        firstColumn.append(tr("<h4 style=\"margin:0px;\"><b>Skills:</b></h4><ul style=\"margin:0px;\">%1</ul>").arg(skill_summary));
 
     if(!m_is_animal && s->value("tooltip_show_mood",false).toBool()){
         QStringList skill_names;
@@ -2629,22 +2629,22 @@ QString Dwarf::tooltip_text() {
         }
         skill_names.removeDuplicates();
         if(skill_names.count() > 0){
-            tt.append(tr("<b>Highest Moodable Skill:</b> %1")
+            firstColumn.append(tr("<b>Highest Moodable Skill:</b> %1")
                       .arg(skill_names.join(",")));
         }
     }
 
     if(!personality_summary.isEmpty())
-        tt.append(tr("<p style=\"margin:0px;\"><b>Personality:</b> %1</p>").arg(personality_summary));
+        secondColumn.append(tr("<b>Personality:</b> %1").arg(personality_summary));
 
     if(!m_pref_tooltip.isEmpty())
-        tt.append(tr("<p style=\"margin:0px;\">%1</p>").arg(m_pref_tooltip));
+        secondColumn.append(tr("%1").arg(m_pref_tooltip));
 
     if(!roles_summary.isEmpty())
-        tt.append(tr("<h4 style=\"margin:0px;\"><b>Top %1 Roles:</b></h4>%2").arg(max_roles).arg(roles_summary));
+        firstColumn.append(tr("<h4 style=\"margin:0px;\"><b>Top %1 Roles:</b></h4>%2").arg(max_roles).arg(roles_summary));
 
     if(m_is_animal)
-        tt.append(tr("<p style=\"margin:0px;\"><b>Trained Level:</b> %1</p>").arg(get_animal_trained_descriptor(m_animal_type)));
+        firstColumn.append(tr("<b>Trained Level:</b> %1").arg(get_animal_trained_descriptor(m_animal_type)));
 
     if(s->value("tooltip_show_health",false).toBool() && (!m_is_animal || (m_is_animal && s->value("animal_health",false).toBool()))){
 
@@ -2675,7 +2675,7 @@ QString Dwarf::tooltip_text() {
         }
 
         if(!health_info.isEmpty())
-            tt.append(health_info);
+            firstColumn.append(health_info);
     }
 
     if(m_syndromes.count() > 0 && s->value("tooltip_show_buffs",false).toBool()){
@@ -2683,19 +2683,17 @@ QString Dwarf::tooltip_text() {
         QString ailments = get_syndrome_names(false,true);
 
         if(!buffs.isEmpty())
-            tt.append(tr("<b>Buffs:</b> %1<br/>").arg(buffs));
+            firstColumn.append(tr("<b>Buffs:</b> %1<br/>").arg(buffs));
         if(!ailments.isEmpty())
-            tt.append(tr("<b>Ailments:</b> %1<br/>").arg(ailments));
+            firstColumn.append(tr("<b>Ailments:</b> %1<br/>").arg(ailments));
     }
 
 
     if(s->value("tooltip_show_caste_desc",true).toBool() && caste_desc() != "")
-        tt.append(tr("%1").arg(caste_desc()));
+        firstColumn.append(tr("%1").arg(caste_desc()));
 
     if(s->value("highlight_cursed", false).toBool() && m_curse_name != ""){
-        QString curse_text = "";
-        curse_text = tr("<br/><b>Curse: </b>A <b><i>%1</i></b>")
-                .arg(capitalizeEach(m_curse_name));
+        QString curse_text = QString(tr("<b>Curse: </b>A <b><i>%1</i></b>")).arg(capitalizeEach(m_curse_name));
         //if we have an assumed identity, show it
         if(m_nice_name != m_true_name && !m_true_name.isEmpty()){
             curse_text.append(tr(" by the name of %1, ").arg(m_true_name));
@@ -2705,15 +2703,16 @@ QString Dwarf::tooltip_text() {
                 curse_text.append(tr("born %1 years before the Age of Myth.").arg(abs(m_true_birth_year)));
             }
         }
-        tt.append(curse_text);
+        firstColumn.append(curse_text);
     }
 
     if(s->value("tooltip_show_kills",false).toBool() && m_hist_figure && m_hist_figure->total_kills() > 0){
-        tt.append(m_hist_figure->formatted_summary());
+        firstColumn.append(m_hist_figure->formatted_summary());
     }
 
     s->endGroup();
-    return tt.join("<br/>");
+
+    return QString("<table><tr><td>%1</td><td>%2</td></tr></table>").arg(firstColumn.join("<br/>")).arg(secondColumn.join("<br/>"));
 }
 
 
