@@ -29,12 +29,12 @@ THE SOFTWARE.
 class DFInstance;
 class MemoryLayout;
 
-const size_t OTHER_PARTICIPANTS =
-#ifdef Q_PROCESSOR_X86_32
+const size_t OTHER_PARTICIPANTS = 0x10; // Offset from DanFritz branch
+/*#ifdef Q_PROCESSOR_X86_32
             0x14;
 #elif defined(Q_PROCESSOR_X86_64)
             0x28;
-#endif
+#endif*/
 
 class ActivityEvent : public QObject {
     Q_OBJECT
