@@ -157,7 +157,7 @@ void TruncatingFileLogger::write(const QString &message,
     // make a string for this log level
     QDateTime now = QDateTime::currentDateTime();
     QString msg("%1 %2%3%4\n");
-    msg = msg.arg(now.toString("yyyy-MMM-dd hh:mm:ss.zzz")).arg(stripped).toLatin1();
+    msg = msg.arg(now.toString("yyyy-MM-dd hh:mm:ss.zzz")).arg(stripped).toLatin1();
 
     QString location;
     QString function;
